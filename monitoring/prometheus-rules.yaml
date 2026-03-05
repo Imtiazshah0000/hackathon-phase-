@@ -1,0 +1,29 @@
+groups:
+- name: revops-agent-alerts
+  rules:
+  - alert: HighTokenUsage
+    expr: sum(rate(revops_tokens_total[5m])) > 10000
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High token consumption detected"
+      description: "RevOps Agent is consuming >10,000 tokens per minute. Check for infinite loops or high lead volume."
+
+  - alert: LeadProcessingErrors
+    expr: sum(rate(revops_errors_total[5m])) > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Lead processing errors detected"
+      description: "The Digital FTE is failing to process leads. Check worker logs."
+
+  - alert: HighEscalationRate
+    expr: (sum(rate(revops_escalations_total[1h])) / sum(rate(revops_leads_total[1h]))) > 0.5
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High escalation rate"
+      description: "More than 50% of leads are being escalated to humans. Persona or scoring logic may need adjustment."
